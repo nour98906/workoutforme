@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Workout">
+<meta name="theme-color" content="#09090d">
+<title>Lean Strength Planner – 4-Day Upper/Lower</title>
+<style>
+:root{--bg:#09090d;--bg2:#101018;--card:#16161f;--card2:#1e1e2b;--line:#2a2a3a;--txt:#eeedf7;--mut:#a09eb5;--p:#8b5cf6;--p2:#6366f1;--ok:#34d399;--warn:#fbbf24;--bad:#f87171;--r:18px;--sh:0 10px 30px rgba(0,0,0,.45)}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:calc(64px + env(safe-area-inset-top,0px));background:#09090d}
+body{font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:radial-gradient(900px 500px at 85% -5%,#2b1c5e66,transparent),var(--bg);color:var(--txt);padding-bottom:calc(90px + env(safe-area-inset-bottom,0px));padding-top:env(safe-area-inset-top,0px)}
+.wrap{max-width:1100px;margin:0 auto;padding:0 18px}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:#09090dd9;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:6px;overflow-x:auto;padding-top:10px;padding-bottom:10px;scrollbar-width:none}
+nav a{white-space:nowrap;color:var(--mut);text-decoration:none;padding:6px 14px;border-radius:99px;font-size:14px;transition:.2s}
+nav a:hover,nav a:focus-visible{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;outline:0}
+section{padding:40px 0 10px}
+h1{font-size:clamp(34px,6vw,58px);line-height:1.05;letter-spacing:-.02em}
+h2{font-size:clamp(24px,3.5vw,32px);margin-bottom:6px;letter-spacing:-.01em}
+h3{font-size:18px}
+.sub{color:var(--mut);margin-bottom:20px;max-width:70ch}
+.hero{display:grid;grid-template-columns:1fr 200px;gap:24px;align-items:center;padding-top:44px;padding-bottom:10px}
+.hero p{color:var(--mut);max-width:60ch;margin:14px 0 20px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+.pills span,.chips span{background:var(--card2);border:1px solid var(--line);border-radius:99px;padding:3px 12px;font-size:13px;color:var(--mut)}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+.btn{font:inherit;font-size:14px;color:var(--txt);background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:9px 16px;cursor:pointer;transition:.2s}
+.btn:hover{border-color:var(--p);transform:translateY(-1px)}
+.btn:focus-visible,.set:focus-visible,.tab:focus-visible,summary:focus-visible{outline:2px solid var(--p);outline-offset:2px}
+.btn.pri{background:linear-gradient(135deg,var(--p),var(--p2));border:0;color:#fff;box-shadow:0 6px 20px #6d4df055}
+.ring{position:relative;justify-self:center}
+.ring svg{width:170px;height:170px}
+.rb{fill:none;stroke:var(--card2);stroke-width:12}
+.rf{fill:none;stroke:url(#g);stroke-width:12;stroke-linecap:round;stroke-dasharray:364.4;stroke-dashoffset:364.4;transition:stroke-dashoffset .6s}
+.ring text{fill:var(--txt);font-size:30px;font-weight:700;text-anchor:middle}
+.ring small{display:block;text-align:center;color:var(--mut);font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--sh);transition:.25s}
+.grid{display:grid;gap:14px}
+.g7{grid-template-columns:repeat(7,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+.day{padding:14px;border-radius:14px;background:var(--card);border:1px solid var(--line);text-align:left;font:inherit;color:var(--txt);min-height:112px;transition:.2s}
+.day b{display:block;font-size:13px;color:var(--mut);font-weight:500}
+.day strong{display:block;font-size:17px;margin:4px 0 8px}
+.day.tr{cursor:pointer;background:linear-gradient(160deg,#241a47,var(--card))}
+.day.tr:hover{transform:translateY(-3px);border-color:var(--p)}
+.day.on{border-color:var(--p);box-shadow:0 0 0 1px var(--p)}
+.day.rs{opacity:.6}
+.bar{height:6px;background:var(--card2);border-radius:9px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--p),var(--p2));border-radius:9px;transition:width .4s}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px}
+.tab,.phb{font:inherit;font-size:14px;white-space:nowrap;color:var(--mut);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 16px;cursor:pointer;transition:.2s}
+.tab.on,.phb.on{color:#fff;background:linear-gradient(135deg,var(--p),var(--p2));border-color:transparent}
+.bartop{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.bartop .bar{flex:1;min-width:160px}
+.list{display:grid;gap:16px}
+.ex{display:grid;grid-template-columns:310px 1fr;background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);transition:.25s}
+.ex:hover{border-color:#4a3d8f}
+.ex.fin{border-color:var(--ok)}
+.img{background:var(--bg2);padding:14px 10px 8px;display:flex;align-items:center}
+.figs{display:flex;gap:6px;width:100%}
+.figs figure{flex:1;text-align:center}
+.figs svg{width:100%;height:auto;display:block}
+.figs figcaption{font-size:12px;color:var(--mut)}
+.b{stroke:var(--p);stroke-width:3;stroke-linecap:round;fill:none;vector-effect:non-scaling-stroke}
+.hd{fill:var(--p2)}
+.w{fill:var(--warn)}
+.c{stroke:var(--mut);stroke-width:1;stroke-dasharray:3 2;vector-effect:non-scaling-stroke}
+.f{stroke:#55556e;fill:#2a2a3a;stroke-width:1.5;vector-effect:non-scaling-stroke}
+.pad{stroke:#3a3a52;stroke-width:6;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.fl{stroke:#3a3a52;stroke-width:1.5;vector-effect:non-scaling-stroke}
+.bd{padding:18px}
+.hdr{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+.num{display:grid;place-items:center;width:28px;height:28px;border-radius:9px;background:var(--card2);color:var(--p);font-weight:700;font-size:14px;flex:none}
+.hdr small{display:block;color:var(--mut);font-size:13px;font-weight:400}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.chips .rpe{cursor:pointer;color:var(--warn);border-color:#5b4a14}
+.mus,.mist{font-size:14px;color:var(--mut);margin-bottom:10px}
+.mus b,.mist b{color:var(--txt)}
+.sets{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:12px;font-size:14px;color:var(--mut)}
+.set{width:40px;height:40px;border-radius:12px;border:2px solid var(--line);background:var(--card2);color:var(--txt);font:inherit;font-weight:700;cursor:pointer;transition:.15s}
+.set:hover{border-color:var(--p)}
+.set.on{background:var(--ok);border-color:var(--ok);color:#06281c}
+.wt{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px;font-size:14px;color:var(--mut)}
+.wt input{width:96px;font:inherit;font-size:16px;color:var(--txt);background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.wt input:focus{outline:2px solid var(--p);border-color:transparent}
+.wl{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:12px;font-size:13px;color:var(--mut)}
+.wl span{background:var(--card2);border:1px solid var(--line);border-radius:99px;padding:2px 10px}
+.wl span:first-of-type{color:var(--ok);border-color:#1d5a45}
+.act{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.btn.dn.on{background:#0e2f25;border-color:var(--ok);color:var(--ok)}
+details{background:var(--bg2);border:1px solid var(--line);border-radius:12px}
+summary{cursor:pointer;padding:11px 14px;font-weight:600;font-size:15px;list-style:none;color:var(--p)}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"＋";float:right}
+details[open] summary::after{content:"－"}
+dl{padding:0 14px 14px}
+dt{font-size:13px;font-weight:700;color:var(--p2);margin-top:10px;filter:brightness(1.5)}
+dd{font-size:14px;color:var(--mut)}
+.pt{display:flex;gap:12px;align-items:flex-start}
+.ic{font-size:26px;line-height:1}
+.card p,.card li{color:var(--mut);font-size:15px}
+.card h3{margin-bottom:6px;color:var(--txt)}
+.card ul{padding-left:18px}
+.ph{cursor:pointer;text-align:left;font:inherit;color:var(--txt)}
+.ph:hover{border-color:var(--p);transform:translateY(-2px)}
+.ph.on{border-color:var(--p);box-shadow:0 0 0 1px var(--p)}
+.ok{color:var(--ok)}.wn{color:var(--warn)}
+.ex-r{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.ex-r span{padding:6px 12px;border-radius:10px;font-weight:600;font-size:14px;background:var(--card2)}
+.rpeR{display:grid;grid-template-columns:70px 1fr 150px;gap:12px;align-items:center;margin:10px 0}
+.rpeR .bar{height:14px}
+.tl{display:grid;gap:10px}
+.tl div{display:grid;grid-template-columns:100px 1fr;gap:12px;padding:12px 16px;background:var(--card);border:1px solid var(--line);border-radius:14px}
+.tl b{color:var(--p)}
+.tl span{color:var(--mut);font-size:15px}
+.fq{display:grid;grid-template-columns:1.3fr repeat(4,1fr) .8fr;gap:6px;align-items:center;font-size:14px}
+.fq>div{padding:9px 6px;text-align:center;border-radius:10px}
+.fq .h{color:var(--mut);font-size:13px}
+.fq .n{text-align:left;font-weight:600}
+.fq .y{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff}
+.fq .z{background:var(--card2);color:#4b4a60}
+.fq .t{color:var(--ok);font-weight:700}
+#timer{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translate(-50%,160%);width:min(440px,calc(100% - 28px));background:#1b1633;border:1px solid var(--p);border-radius:16px;padding:12px 16px;box-shadow:var(--sh);z-index:30;transition:.3s}
+#timer.show{transform:translate(-50%,0)}
+#timer .r{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+#tt{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums}
+dialog{margin:auto;max-width:min(520px,calc(100% - 28px));background:var(--card);color:var(--txt);border:1px solid var(--p);border-radius:var(--r);padding:22px}
+dialog::backdrop{background:#000a;backdrop-filter:blur(3px)}
+footer{padding:30px 0;color:var(--mut);font-size:13px}
+@media(max-width:860px){.g7{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:1fr}.hero{grid-template-columns:1fr}.ring{justify-self:start}.ex{grid-template-columns:1fr}.g2{grid-template-columns:1fr}.rpeR{grid-template-columns:55px 1fr}.rpeR span:last-child{grid-column:2}.fq{grid-template-columns:1.4fr repeat(4,.8fr) .6fr;font-size:12px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<nav><div class="wrap" id="nav"></div></nav>
+
+<header class="wrap hero">
+  <div>
+    <div class="pills"><span>Age 15</span><span>167 cm</span><span>55 kg</span><span>4 days / week</span><span>Under 60 min</span></div>
+    <h1>Lean Strength<br>Training Planner</h1>
+    <p>A 4-day Upper/Lower program built around good technique, steady progress and plenty of recovery, to build lean muscle while you keep growing. Tick off your sets, run the rest timer and watch your week fill up.</p>
+    <div class="row"><button class="btn pri" id="goW">Open today's workout</button><button class="btn" data-rpe>What is RPE?</button></div>
+  </div>
+  <div class="ring">
+    <svg viewBox="0 0 140 140" role="img" aria-label="Weekly completion"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#6366f1"/></linearGradient></defs><circle class="rb" cx="70" cy="70" r="58"/><circle class="rf" id="ringC" cx="70" cy="70" r="58" transform="rotate(-90 70 70)"/><text x="70" y="80" id="ringT">0%</text></svg>
+    <small>this week</small>
+  </div>
+</header>
+
+<main class="wrap">
+<section id="sched">
+  <h2>Weekly schedule</h2>
+  <p class="sub">Tap a training day to open it. Train Sunday, Monday, Wednesday and Thursday. Tuesday, Friday and Saturday are rest days.</p>
+  <div class="grid g7" id="days"></div>
+  <div class="card" style="margin-top:14px"><div class="bartop" style="margin:0"><div><h3>Weekly completion summary</h3><p id="wkTxt"></p></div><button class="btn" data-newwk>Start new week</button></div></div>
+</section>
+
+<section id="work">
+  <h2>Workouts</h2>
+  <p class="sub">Each session is about 50–55 minutes including the warm-up. Choose your phase first: sets shrink in Week 1.</p>
+  <div class="tabs" id="phase"></div>
+  <div class="tabs" id="tabs"></div>
+  <div class="bartop"><div class="bar"><i id="dayBar" style="width:0"></i></div><span id="dayTxt" style="color:var(--mut);font-size:14px"></span><button class="btn" data-reset>Reset workout</button></div>
+  <div class="list" id="list"></div>
+  <div class="card" style="margin-top:16px"><h3>Rest times</h3><p>Heavy compounds (bench, squat, leg press, Romanian deadlift): 2–3 minutes. Moderate compound and machine work: 90–120 seconds. Isolation and core: 60–90 seconds. Tap the timer on any card.</p></div>
+</section>
+
+<section id="ramp">
+  <h2>First 2 weeks: ramp-up</h2>
+  <p class="sub">Rebuild your training tolerance gently so soreness stays low. Tap a card to switch the workouts to that phase.</p>
+  <div class="grid g3">
+    <button class="card ph" data-ph="1"><div class="ic">🌱</div><h3>Week 1</h3><p>About 2/3 of the listed sets (3 sets become 2, 2 sets become 1). Keep most exercises around RPE 6–7. The goal is learning the movements and avoiding heavy soreness.</p></button>
+    <button class="card ph" data-ph="2"><div class="ic">🌿</div><h3>Week 2</h3><p>Do the full number of sets. Still RPE 6–7 on most exercises. Do not train to failure.</p></button>
+    <button class="card ph" data-ph="3"><div class="ic">🌳</div><h3>Week 3 onward</h3><p>Follow the normal program (RPE 7–8) and progress gradually. Put technique and consistency ahead of lifting heavy.</p></button>
+  </div>
+</section>
+
+<section id="prog">
+  <h2>Progression: double progression</h2>
+  <p class="sub">Each exercise has a rep range. Stay at one weight until you reach the top of the range on every set with good technique, then add a small amount.</p>
+  <div class="grid g2">
+    <div class="card"><h3>Example: 3 × 6–10</h3>
+      <div class="ex-r"><span class="ok">10 / 10 / 10 at about RPE 8</span></div><p style="margin-top:6px">Every set hit the top of the range with controlled form. <b>Add a small amount of weight next session</b> (the smallest jump available).</p>
+      <div class="ex-r"><span class="wn">10 / 9 / 8</span></div><p style="margin-top:6px">Not there yet. <b>Keep the same weight</b> and try to add a rep or two next time.</p></div>
+    <div class="card"><h3>Rules</h3><ul>
+      <li>Only add weight when technique stays controlled.</li>
+      <li>After adding weight, reps will drop. That is normal; build back up.</li>
+      <li>Do not train to failure on compound lifts. Stop with at least 2 good reps left.</li>
+      <li>No max-effort single-rep tests, ever.</li>
+      <li>A bad day? Repeat the weight or lower it. Consistency beats ego.</li></ul></div>
+  </div>
+</section>
+
+<section id="rpe">
+  <h2>RPE guide</h2>
+  <p class="sub">RPE (rate of perceived exertion) means how many good reps you still have left. This program mostly lives at RPE 7–8.</p>
+  <div class="card" id="rpeBox"></div>
+</section>
+
+<section id="warm">
+  <h2>5-minute dynamic warm-up</h2>
+  <p class="sub">Do this before every session.</p>
+  <div class="tl">
+    <div><b>0:00–1:00</b><span>Easy treadmill, bike or rowing</span></div>
+    <div><b>1:00–2:00</b><span>Arm circles + band pull-aparts</span></div>
+    <div><b>2:00–3:00</b><span>Bodyweight squats + reverse lunges</span></div>
+    <div><b>3:00–4:00</b><span>Hip hinges + walking lunges</span></div>
+    <div><b>4:00–5:00</b><span>Workout-specific dynamic movements: shoulder rotations and scapular push-ups on upper days; leg swings and glute bridges on lower days</span></div>
+  </div>
+  <div class="card" style="margin-top:14px"><h3>Then: light ramp-up sets</h3><p>Before the first heavy compound exercise (bench, squat or leg press), do 2–3 lighter sets of that same lift, for example 8 reps at about half your working weight, then 5 reps at about 70%. Rest briefly between them, then start your working sets.</p></div>
+</section>
+
+<section id="nut">
+  <h2>Nutrition</h2>
+  <p class="sub">The goal is to support healthy growth, performance and recovery, with gradual body recomposition. This is not a cutting phase.</p>
+  <div class="grid g2">
+    <div class="card"><h3>Protein: 1.4–1.6 g/kg/day</h3><p>For 55 kg that is about <b style="color:var(--txt)">77–88 g per day</b>. Spread it over 3–4 meals (roughly 20–30 g each) rather than one big serving.</p>
+      <div class="ex-r"><span>Chicken breast 100 g ≈ 30 g</span><span>Beef 100 g ≈ 26 g</span><span>Fish / tuna 100 g ≈ 25 g</span><span>Greek yogurt 200 g ≈ 18 g</span><span>Milk 250 ml ≈ 8 g</span><span>Cheese 30 g ≈ 7 g</span><span>Lentils, cooked 1 cup ≈ 18 g</span><span>Beans, cooked 1 cup ≈ 15 g</span><span>Egg ≈ 6 g (if tolerated)</span></div><p style="margin-top:8px;font-size:13px">Amounts are approximate.</p></div>
+    <div class="card"><h3>Calories and supplements</h3><ul>
+      <li>No fixed calorie deficit should be prescribed to a teenager from height and weight alone. Do not diet aggressively.</li>
+      <li>Eat enough, regular meals with carbs, protein, fats, fruit and vegetables to fuel training and growth.</li>
+      <li>If you have concerns about weight or growth, talk with a parent/guardian and a pediatrician or sports dietitian.</li>
+      <li>Food first. No unnecessary supplements.</li></ul></div>
+  </div>
+</section>
+
+<section id="rec">
+  <h2>Recovery</h2>
+  <div class="grid g3">
+    <div class="card"><div class="ic">😴</div><h3>Sleep</h3><p>Aim for 8–10 hours a night. This is when you grow and repair.</p></div>
+    <div class="card"><div class="ic">💧</div><h3>Hydration</h3><p>Drink water through the day and during training. Pale yellow urine is a good sign.</p></div>
+    <div class="card"><div class="ic">🛌</div><h3>Rest days</h3><p>Muscle is built during recovery. Do not add extra workouts on rest days.</p></div>
+    <div class="card"><div class="ic">🚶</div><h3>Light activity</h3><p>Walks, easy cycling or gentle stretching on rest days help you feel fresher.</p></div>
+    <div class="card"><div class="ic">🩹</div><h3>Soreness and pain</h3><p>Mild muscle soreness is normal and fades in 1–3 days. Sharp, pinching or joint pain is not: stop that exercise, and tell a parent or coach if it persists.</p></div>
+    <div class="card"><div class="ic">📅</div><h3>Consistency</h3><p>Four good sessions a week for months beats a few heroic weeks. Show up, move well, repeat.</p></div>
+  </div>
+</section>
+
+<section id="freq">
+  <h2>Muscle frequency</h2>
+  <p class="sub">Every major muscle group is trained about twice per week.</p>
+  <div class="card"><div class="fq" id="fq"></div></div>
+</section>
+</main>
+
+<footer class="wrap">This planner is general education, not medical advice. Learn barbell lifts with a qualified coach or supervision, use safety equipment, and talk with a parent/guardian or doctor before starting if you have any health concerns.</footer>
+
+<div id="timer"><div class="r"><span>Rest</span><span id="tt">0:00</span><button class="btn" data-stop>Skip</button></div><div class="bar"><i id="tbar" style="width:0"></i></div></div>
+
+<dialog id="rpeD"><h3>RPE: reps in reserve</h3><p style="color:var(--mut);margin:8px 0 12px">RPE tells you how hard a set felt. Stop each set with good form and some reps left.</p><div id="rpeMini"></div><p style="color:var(--mut);margin:12px 0">This program mostly stays at RPE 7–8. Never grind reps or let form slip.</p><button class="btn pri" data-close>Got it</button></dialog>
+
+<script>
+const R=Math.PI/180,P=(o,a,l)=>[o[0]+l*Math.sin(a*R),o[1]+l*Math.cos(a*R)];
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const fmt=s=>Math.floor(s/60)+":"+String(s%60).padStart(2,"0");
+
+/* Pose = [torso, thigh, shin, upperArm, forearm, foot, rearThigh, rearShin]; angles in degrees, 0 = down, 90 = forward, 180 = up. */
+const E={
+bench:{n:"Bench Press",m:"Chest, front shoulders, triceps",r:150,q:"dB",f:[[270,100,5,180,180],[270,100,5,20,180]],t:[
+"Lie on the bench with eyes under the bar, feet flat on the floor, shoulder blades pulled back and down, with a small natural arch in your lower back.",
+"Grip slightly wider than shoulders. Unrack the bar over your shoulders, lower it slowly to mid-chest, touch lightly, then press up until your arms are straight.",
+"Breathe in on the way down, breathe out as you press.",
+"Bouncing the bar off your chest, lifting hips off the bench, flaring elbows straight out, pressing unevenly.",
+"Always use a spotter or safety arms. Keep wrists stacked over elbows and thumbs wrapped around the bar.",
+"Stop if you cannot control the bar on the way down, one side lags, or you feel sharp shoulder pain. Reduce the weight."]},
+latpd:{n:"Lat Pulldown",m:"Lats, upper back, biceps",r:105,q:"cS",a:[4,-62],f:[[190,90,0,165,165],[190,90,0,-15,150]],t:[
+"Sit tall with thighs locked under the pad, hands slightly wider than shoulders, arms stretched up.",
+"Lead with your elbows: pull the bar to your upper chest while your chest stays lifted, then let it rise slowly until your arms are straight. (Assisted pull-up: same pull, with enough assistance to keep every rep clean.)",
+"Breathe out as you pull down, in as the bar rises.",
+"Leaning far back and swinging, pulling the bar behind the neck, shrugging shoulders to the ears.",
+"Pull to the front only. Control the bar on the way up so it does not yank your shoulders.",
+"Reduce the weight if you swing or shrug. Stop with any sharp shoulder or elbow pain."]},
+row:{n:"Seated Cable Row",m:"Mid-back, lats, rear shoulders, biceps",r:105,q:"cS",a:[52,-30],f:[[170,80,20,95,95],[185,80,20,-10,95]],t:[
+"Sit tall with feet on the platform, knees slightly bent, back straight, arms reaching toward the handle.",
+"Pull the handle to your belly while squeezing your shoulder blades together, pause for one second, then let your arms straighten slowly.",
+"Breathe out as you pull, in as you return.",
+"Rocking your whole body, rounding the lower back, shrugging, letting the weight yank you forward.",
+"Keep your chest proud and ribs down. Your torso should move very little.",
+"Lower the weight if your back rounds or you need momentum. Stop if your lower back hurts."]},
+dbpress:{n:"Dumbbell Shoulder Press",m:"Shoulders, triceps, upper chest",r:105,q:"dS",f:[[180,90,0,20,170],[180,90,0,180,180]],t:[
+"Sit upright with back supported, a dumbbell in each hand at shoulder height, palms facing forward.",
+"Press the dumbbells up until your arms are almost straight, then lower slowly back to shoulder height.",
+"Breathe in at the bottom, out as you press.",
+"Arching the lower back, shrugging, letting the dumbbells drift far apart or forward, dropping them fast.",
+"Keep ribs down and glutes on the seat. Start lighter than you think you need.",
+"Stop if your back arches to finish a rep or you feel pinching in the shoulder."]},
+lateral:{n:"Lateral Raise",m:"Side shoulders",r:75,q:"d",l:["Start","Top (arms rise out to the sides)"],f:[[180,0,0,0,0],[180,0,0,85,95]],t:[
+"Stand tall with a light dumbbell in each hand (or a cable handle), arms by your sides, elbows slightly bent.",
+"Raise your arms out to the sides to about shoulder height, leading with the elbows, pause, then lower slowly. (Diagram is a side view.)",
+"Breathe out as you lift, in as you lower.",
+"Swinging the body, lifting above shoulder height, shrugging, using weights that are too heavy.",
+"Think of pouring water from a jug. Light weights and slow control work best.",
+"Drop the weight if you need to swing. Stop with sharp shoulder pain."]},
+curl:{n:"Biceps Curl",m:"Biceps, forearms",r:75,q:"d",f:[[180,0,0,5,0],[180,0,0,5,150]],t:[
+"Stand tall with dumbbells (or a cable bar) at your sides, palms forward, elbows tucked against your ribs.",
+"Curl the weight toward your shoulders without moving your elbows, squeeze, then lower over 2–3 seconds.",
+"Breathe out as you curl, in as you lower.",
+"Swinging the body, elbows drifting forward, half reps, letting the weight drop.",
+"Keep knees soft and core tight. Do not lean back.",
+"Lower the weight if your back moves to lift it. Stop with elbow or wrist pain."]},
+pushdown:{n:"Cable Triceps Pushdown",m:"Triceps",r:75,q:"c",a:[10,-75],f:[[172,0,0,0,135],[172,0,0,0,10]],t:[
+"Stand facing the cable machine, hold the bar or rope, elbows tucked at your sides, torso leaning very slightly forward.",
+"Press the handle down until your arms are straight, squeeze the triceps, then let your hands rise to chest height under control.",
+"Breathe out as you push down, in as you return.",
+"Elbows flaring or moving, leaning over the weight, using body weight to push, short reps.",
+"Only your forearms move. Keep shoulders down and relaxed.",
+"Reduce the weight if your elbows drift. Stop with elbow pain."]},
+squat:{n:"Squat (Goblet or Barbell)",m:"Quads, glutes, hamstrings, core",r:150,q:"d",f:[[180,0,0,20,150],[140,95,-30,20,150]],t:[
+"Feet shoulder-width apart, toes slightly out. Beginners hold one dumbbell at the chest (goblet squat). A barbell goes on the upper back only with coach supervision.",
+"Brace your core, sit your hips back and down between your knees, go as low as you can with a flat back (about thigh-parallel), then stand by pushing the floor away.",
+"Take a big breath in and brace before going down; breathe out as you stand.",
+"Knees caving in, heels lifting, rounding the lower back, dropping too fast, leaning too far forward.",
+"Learn with goblet squats or an empty bar first. Always use safety pins or a spotter with a barbell, and have a coach check your form. Without supervision, use the leg press instead.",
+"Stop if your form breaks down, your back rounds, or you feel sharp knee or back pain. Never test a max."]},
+rdl:{n:"Romanian Deadlift",m:"Hamstrings, glutes, lower back",r:150,q:"d",f:[[180,0,0,0,0],[120,35,-8,-12,-12]],t:[
+"Stand with feet hip-width apart, holding a barbell or dumbbells in front of your thighs, knees soft, chest up.",
+"Push your hips straight back, sliding the weight down your thighs with a flat back until you feel a hamstring stretch (around knee level), then squeeze your glutes to stand tall.",
+"Breathe in and brace as you lower, out as you stand.",
+"Rounding the back, squatting instead of hinging, letting the weight drift away from your legs, locking the knees hard.",
+"Your back stays flat the whole time. Start light with dumbbells and have a coach check your technique before using a barbell.",
+"Stop lowering as soon as your back starts to round. Reduce the weight if you cannot keep a neutral spine, and stop with back pain."]},
+bss:{n:"Bulgarian Split Squat",m:"Quads, glutes, adductors",r:105,q:"dr",f:[[180,0,0,0,0,90,-30,-82],[170,80,-10,0,0,90,-10,-146]],t:[
+"Stand about a stride in front of a bench, rest the top of your back foot on it. Hold dumbbells at your sides, or use no weight at first.",
+"Lower straight down until the front thigh is about parallel, keeping your front heel down, then drive up through the front foot. Finish all reps, then switch legs.",
+"Breathe in on the way down, out as you rise.",
+"Standing too close to the bench, front knee collapsing inward, leaning far forward, pushing off the back foot.",
+"Hold a wall or rack for balance at first. Move slowly.",
+"Stop if you lose balance or feel sharp knee pain. Use bodyweight only until you are steady."]},
+legcurl:{n:"Leg Curl",m:"Hamstrings",r:75,q:"B",h:1,fy:18,f:[[270,90,90,270,270],[270,90,190,270,270]],t:[
+"Lie face down (or sit) on the machine with the pad just above your heels and knees lined up with the pivot.",
+"Curl your heels toward your glutes, squeeze the back of your thighs, then lower slowly over 2–3 seconds.",
+"Breathe out as you curl, in as you lower.",
+"Lifting hips off the pad, jerking the weight, short range of motion.",
+"Keep hips down and moves smooth and controlled.",
+"Reduce the weight if your hips lift. Stop with a cramp that will not ease, or sharp knee or hamstring pain."]},
+calf:{n:"Calf Raise",m:"Calves",r:75,q:"",l:["Start (heels low)","Top (heels high)"],f:[[180,0,0,0,0,90],[180,0,0,0,0,35]],t:[
+"Stand with the balls of your feet on a step or machine platform, heels hanging off, one hand on a rail for balance.",
+"Rise onto your toes as high as you can, pause for one second at the top, then lower your heels below the step for a deep stretch.",
+"Breathe out as you rise, in as you lower.",
+"Bouncing, half range of motion, bending the knees, rushing.",
+"A slow 2-second lowering gives the best results.",
+"Stop if you feel sharp pain in the Achilles tendon or calf."]},
+plank:{n:"Plank",m:"Abs, core, shoulders, glutes",r:75,q:"",l:["Setup","Hold"],f:[[100,276,276,0,90,38],[100,276,276,0,90,38]],t:[
+"Forearms on the floor with elbows under shoulders, legs straight, toes on the floor.",
+"Make a straight line from head to heels: squeeze your glutes, brace your abs and hold while breathing steadily.",
+"Breathe slowly and normally. Do not hold your breath.",
+"Hips sagging or piking up, shrugged shoulders, holding the breath, looking forward.",
+"Stop the set while your form is still perfect. Quality matters more than time.",
+"End the set when hips sag or your lower back aches."]},
+incdb:{n:"Incline Dumbbell Press",m:"Upper chest, front shoulders, triceps",r:105,q:"dI",po:[-4,4],f:[[225,100,5,20,180],[225,100,5,180,180]],t:[
+"Set the bench to a low incline (about 30°). Sit with your back supported, dumbbells on your thighs, and bring them to shoulder height.",
+"Press the dumbbells up and slightly together until your arms are almost straight, then lower slowly to the sides of your upper chest.",
+"Breathe in as you lower, out as you press.",
+"Bench set too steep (it becomes a shoulder press), elbows flaring wide, dumbbells banging together, bouncing.",
+"Keep feet planted and shoulder blades pinched. Lower the dumbbells under control when finished; never drop them.",
+"Use a lighter weight if you cannot control the dumbbells. Stop with shoulder pain."]},
+csrow:{n:"Chest-Supported Row",m:"Mid-back, lats, rear shoulders, biceps",r:105,q:"dI",po:[5,5],f:[[135,-20,-5,0,0],[135,-20,-5,-70,0]],t:[
+"Lie chest-down on an incline bench set at about 30–45°, feet on the floor, dumbbells hanging with arms straight.",
+"Pull the dumbbells toward your hips by driving your elbows back, squeeze your shoulder blades, pause, then lower slowly.",
+"Breathe out as you row, in as you lower.",
+"Lifting the chest off the pad, shrugging, swinging, half reps.",
+"Your chest stays on the pad so the back does the work, not momentum.",
+"Lower the weight if your chest leaves the pad. Stop with sharp shoulder or elbow pain."]},
+machpress:{n:"Machine Chest Press",m:"Chest, front shoulders, triceps",r:105,q:"dS",f:[[185,90,0,-30,90],[185,90,0,90,90]],t:[
+"Adjust the seat so the handles are at mid-chest height. Sit with your back flat on the pad and feet planted.",
+"Press the handles forward until your arms are almost straight, then return slowly until you feel a light chest stretch.",
+"Breathe out as you press, in as you return.",
+"Shoulders rolling forward, lifting your back off the pad, locking elbows hard, letting the weights slam.",
+"Keep your shoulder blades pinned back against the pad.",
+"Reduce the weight if you cannot control the return. Stop with shoulder pain."]},
+ohtri:{n:"Overhead Cable Triceps Extension",m:"Triceps (long head)",r:75,q:"c",a:[-28,-6],f:[[175,0,0,175,-20],[175,0,0,175,175]],t:[
+"Face away from the cable stack, hold a rope or handle behind your head with elbows pointing up, one foot slightly forward.",
+"Straighten your arms overhead, squeeze the triceps, then bend your elbows slowly to return behind your head.",
+"Breathe out as you extend, in as you return.",
+"Elbows flaring, arching the lower back, using the shoulders, going too heavy.",
+"Brace your core and keep ribs down. Only the forearms move.",
+"Use a lighter weight if your back arches or your elbows ache. Stop with sharp elbow pain."]},
+legpress:{n:"Leg Press",m:"Quads, glutes, hamstrings",r:150,q:"pI",po:[-4,4],h:1,fy:12,f:[[235,130,45,5,60,150],[235,105,85,5,60,150]],t:[
+"Sit with your back flat against the pad and feet shoulder-width on the middle of the platform. Release the safety handles.",
+"Lower the platform until your knees bend to about 90° (hips and lower back stay on the pad), then push through your whole foot until your legs are almost straight.",
+"Breathe in as you lower, out as you push.",
+"Locking the knees hard, hips curling off the pad, knees caving in, lowering too deep, bouncing.",
+"Never snap into lockout. Check the safety stops are set, and do not push on your knees with your hands.",
+"Stop if your lower back peels off the pad or your knees cave in. Reduce the load."]},
+legext:{n:"Leg Extension",m:"Quads",r:75,q:"S",h:1,f:[[185,90,0,-10,20],[185,90,90,-10,20]],t:[
+"Adjust the seat so your knees line up with the machine pivot and the pad rests on your lower shins. Hold the side handles.",
+"Straighten your legs until almost locked, squeeze your quads for a second, then lower slowly over about 3 seconds.",
+"Breathe out as you extend, in as you lower.",
+"Swinging the weight, locking knees hard, lifting hips, going too heavy.",
+"Smooth and slow. No jerky movements.",
+"Stop with sharp knee pain. Lower the weight if you need momentum."]},
+deadbug:{n:"Dead Bug",m:"Deep abs, core, hip flexors",r:75,q:"",h:1,fy:6,f:[[270,180,90,180,180],[270,100,100,270,270]],t:[
+"Lie on your back with arms straight up toward the ceiling, hips and knees bent at 90° (tabletop), lower back gently pressed into the floor.",
+"Slowly lower one arm overhead and the opposite leg toward the floor without letting your lower back lift. Return, then switch sides.",
+"Breathe out as you extend, in as you return.",
+"Back arching off the floor, moving too fast, holding the breath.",
+"Move only as far as you can keep your back flat. Slow is better.",
+"Shorten the movement or keep the legs bent if your back arches. Stop with back pain."]}
+};
+
+function fig(e){
+ const bd=(f,ox,oy)=>{const[t,th,sh,ua,fa,ft=90,t2,s2]=f,H=[ox,oy],sho=P(H,t,28),kn=P(H,th,22),an=P(kn,sh,22),to=P(an,ft,7),el=P(sho,ua,15),wr=P(el,fa,15),S=[[H,sho],[H,kn],[kn,an],[an,to],[sho,el],[el,wr]];let a2;
+  if(t2!=null){const k=P(H,t2,22);a2=P(k,s2,22);S.push([H,k],[k,a2])}
+  return{H,sho,an,wr,a2,S,hd:P(sho,t,10)}};
+ const r0=e.f.map(f=>bd(f,0,0)),my=r0.map(o=>Math.max(...o.S.flat().map(p=>p[1]))),cm=Math.max(...my);
+ const fr=e.f.map((f,i)=>bd(f,e.h?0:-r0[i].an[0],e.h?-cm-(e.fy||0):-my[i])),q=e.q||"",po=e.po||[0,0];
+ const out=fr.map(o=>{const{H,sho,an,wr,a2,S,hd}=o;let s="";const pts=[...S.flat(),[hd[0]-7,hd[1]-7],[hd[0]+7,hd[1]+7]];
+  if(q.includes("B")){s+=`<rect class="f" x="${H[0]-38}" y="${H[1]+3}" width="44" height="4" rx="2"/><path class="f" d="M${H[0]-34} ${H[1]+7}V0M${H[0]+2} ${H[1]+7}V0"/>`;pts.push([H[0]-38,0],[H[0]+6,0])}
+  if(q.includes("S")){s+=`<rect class="f" x="${H[0]-7}" y="${H[1]+3}" width="16" height="3" rx="1.5"/><path class="f" d="M${H[0]+1} ${H[1]+6}V0"/>`;pts.push([H[0]-7,0],[H[0]+9,0])}
+  if(q.includes("I")){s+=`<line class="pad" x1="${H[0]+po[0]}" y1="${H[1]+po[1]}" x2="${sho[0]+po[0]}" y2="${sho[1]+po[1]}"/>`;pts.push([H[0]+po[0],H[1]+po[1]],[sho[0]+po[0],sho[1]+po[1]])}
+  if(q.includes("p")){s+=`<path class="f" d="M${an[0]+4} ${an[1]-12}V${an[1]+12}"/>`;pts.push([an[0]+4,an[1]-12],[an[0]+4,an[1]+12])}
+  if(q.includes("r")){s+=`<rect class="f" x="${a2[0]-9}" y="${a2[1]+1}" width="14" height="${-a2[1]-1}"/>`;pts.push([a2[0]-9,a2[1]])}
+  s+=S.map(l=>`<line class="b" x1="${l[0][0]}" y1="${l[0][1]}" x2="${l[1][0]}" y2="${l[1][1]}"/>`).join("")+`<circle class="hd" cx="${hd[0]}" cy="${hd[1]}" r="6"/>`;
+  if(q.includes("c")){const A=[H[0]+e.a[0],H[1]+e.a[1]];s+=`<line class="c" x1="${wr[0]}" y1="${wr[1]}" x2="${A[0]}" y2="${A[1]}"/><circle class="w" cx="${A[0]}" cy="${A[1]}" r="2"/>`;pts.push(A)}
+  if(q.includes("d")||q.includes("c"))s+=`<circle class="w" cx="${wr[0]}" cy="${wr[1]}" r="4"/>`;
+  return{s,pts}});
+ const al=out.flatMap(o=>o.pts),xs=al.map(p=>p[0]),ys=al.map(p=>p[1]),mx=Math.min(...xs),Mx=Math.max(...xs),m2=Math.min(...ys),M2=Math.max(...ys,0),
+ w=Mx-mx,h=M2-m2,s=Math.min(88/w,66/h),tx=50-(mx+Mx)/2*s,ty=(84-h*s)/2-m2*s,lab=e.l||["Start","Finish"];
+ return`<div class="figs">`+out.map((o,i)=>`<figure><svg viewBox="0 0 100 84" role="img" aria-label="${e.n}: ${lab[i]} position"><g transform="translate(${tx} ${ty}) scale(${s})"><line class="fl" x1="${mx-3}" y1="0" x2="${Mx+3}" y2="0"/>${o.s}</g></svg><figcaption>${lab[i]}</figcaption></figure>`).join("")+`</div>`;
+}
+
+const W=[
+{k:"UA",d:"Sunday",n:"Upper A",x:[["bench",3,"6–10","7–8"],["latpd",3,"8–12","7–8"],["row",3,"8–12","7–8"],["dbpress",2,"8–12","7"],["lateral",2,"12–15","8","Dumbbell / cable"],["curl",2,"10–15","8","Dumbbell / cable"],["pushdown",2,"10–15","8"]]},
+{k:"LA",d:"Monday",n:"Lower A",x:[["squat",3,"6–10","7","Squat or leg press"],["rdl",3,"8–10","7–8"],["bss",2,"8–12 per leg","7"],["legcurl",2,"10–15","8"],["calf",3,"10–15","8"],["plank",2,"30–60 sec","7"]]},
+{k:"UB",d:"Wednesday",n:"Upper B",x:[["incdb",3,"8–12","7–8"],["csrow",3,"8–12","7–8"],["latpd",2,"8–12","7–8","Or assisted pull-up"],["machpress",2,"8–12","7–8"],["lateral",2,"12–15","8"],["curl",2,"10–15","8"],["ohtri",2,"10–15","8"]]},
+{k:"LB",d:"Thursday",n:"Lower B",x:[["legpress",3,"8–12","7–8","Leg press or squat"],["rdl",3,"8–12","7–8","Or another hip-hinge"],["bss",2,"8–12 per leg","7"],["legext",2,"10–15","8"],["legcurl",2,"10–15","8","Seated or lying"],["calf",3,"10–15","8"],["deadbug",2,"8–12 per side","7"]]}
+];
+const WK=[["Sunday","UA"],["Monday","LA"],["Tuesday"],["Wednesday","UB"],["Thursday","LB"],["Friday"],["Saturday"]];
+let S={done:{},log:{},ph:"3",day:"UA"},lastDay="",draft={};
+try{Object.assign(S,JSON.parse(localStorage.getItem("wp15")||"{}"))}catch(e){}
+S.log=S.log||{};
+const MO=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const dl=d=>{const p=d.split("-");return(+p[2])+" "+MO[p[1]-1]};
+const today=()=>{const n=new Date();return n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0")};
+const kgT=k=>k?k+" kg":"Bodyweight";
+const save=()=>{try{localStorage.setItem("wp15",JSON.stringify(S))}catch(e){}};
+const ns=n=>S.ph=="1"?Math.max(1,Math.round(n*2/3)):n;
+const cur=()=>W.find(w=>w.k==S.day)||W[0];
+const stat=w=>{let t=0,d=0;w.x.forEach((r,i)=>{for(let j=0;j<ns(r[1]);j++){t++;if(S.done[`${w.k}:${i}:${j}`])d++}});return{t,d}};
+
+const NAV=[["sched","Schedule"],["work","Workouts"],["ramp","Ramp-up"],["prog","Progression"],["rpe","RPE"],["warm","Warm-up"],["nut","Nutrition"],["rec","Recovery"],["freq","Frequency"]];
+$("#nav").innerHTML=NAV.map(a=>`<a href="#${a[0]}">${a[1]}</a>`).join("");
+
+const RP=[[6,"About 4 reps left","Ramp-up weeks",40],[7,"About 3 reps left","Main working sets",55],[8,"About 2 reps left","Main working sets",70],[9,"About 1 rep left","Rarely needed",85],[10,"Failure","Not used here",100]];
+const rpeHtml=RP.map(r=>`<div class="rpeR"><b>RPE ${r[0]}</b><div class="bar"><i style="width:${r[3]}%;background:${r[0]<7?"#34d399":r[0]<9?"linear-gradient(90deg,#8b5cf6,#6366f1)":"#f87171"}"></i></div><span style="color:var(--mut);font-size:14px">${r[1]}</span></div>`).join("");
+$("#rpeBox").innerHTML=rpeHtml+`<p style="margin-top:8px">Most of this program stays at <b style="color:var(--txt)">RPE 7–8</b>: hard enough to grow, with good reps still in the tank.</p>`;
+$("#rpeMini").innerHTML=rpeHtml;
+
+const FQ=[["Chest",0,2],["Back",0,2],["Shoulders",0,2],["Biceps",0,2],["Triceps",0,2],["Quads",1,3],["Hamstrings",1,3],["Glutes",1,3],["Calves",1,3],["Core",1,3]];
+const FD=["Sun","Mon","Wed","Thu"];
+$("#fq").innerHTML=`<div class="h"></div>`+FD.map(d=>`<div class="h">${d}</div>`).join("")+`<div class="h">Per week</div>`+FQ.map(r=>`<div class="n">${r[0]}</div>`+FD.map((d,i)=>`<div class="${i==r[1]||i==r[2]?"y":"z"}">${i==r[1]||i==r[2]?"✓":"–"}</div>`).join("")+`<div class="t">2×</div>`).join("");
+
+function renderSched(){
+ let T=0,D=0;W.forEach(w=>{const s=stat(w);T+=s.t;D+=s.d});
+ const pc=T?Math.round(D/T*100):0;
+ $("#ringT").textContent=pc+"%";$("#ringC").style.strokeDashoffset=364.4*(1-pc/100);
+ $("#wkTxt").textContent=`${D} of ${T} sets completed this week (${pc}%).`;
+ $("#days").innerHTML=WK.map(d=>{
+  if(!d[1])return`<div class="day rs"><b>${d[0]}</b><strong>Rest</strong><span style="font-size:13px;color:var(--mut)">${d[0]=="Tuesday"?"Light walk":"Recover"}</span></div>`;
+  const w=W.find(x=>x.k==d[1]),s=stat(w);
+  return`<button class="day tr${w.k==S.day?" on":""}" data-go="${w.k}"><b>${d[0]}</b><strong>${w.n}</strong><div class="bar"><i style="width:${s.t?s.d/s.t*100:0}%"></i></div><span style="font-size:12px;color:var(--mut)">${s.d}/${s.t} sets</span></button>`}).join("");
+}
+
+function renderDay(){
+ const w=cur(),keep=lastDay==w.k?$$("#list details[open]").map(d=>d.dataset.i):[];lastDay=w.k;
+ $("#phase").innerHTML=[["1","Week 1 · ramp-up"],["2","Week 2 · full sets"],["3","Week 3+ · normal"]].map(p=>`<button class="phb${S.ph==p[0]?" on":""}" data-ph="${p[0]}">${p[1]}</button>`).join("");
+ $("#tabs").innerHTML=W.map(x=>`<button class="tab${x.k==S.day?" on":""}" data-tab="${x.k}">${x.d.slice(0,3)} · ${x.n}</button>`).join("");
+ $("#list").innerHTML=w.x.map((r,i)=>{
+  const e=E[r[0]],n=ns(r[1]);let boxes="",c=0;
+  for(let j=0;j<n;j++){const k=`${w.k}:${i}:${j}`,on=S.done[k];c+=on?1:0;boxes+=`<button class="set${on?" on":""}" data-set="${k}" aria-label="Set ${j+1}${on?" done":""}">${j+1}</button>`}
+  const full=c==n,t=e.t,key=`${w.k}:${i}`,lg=S.log[key]||[],val=key in draft?draft[key]:(lg.length?lg[lg.length-1].kg:"");
+  return`<article class="ex${full?" fin":""}"><div class="img">${fig(e)}</div><div class="bd">
+  <div class="hdr"><span class="num">${i+1}</span><h3>${e.n}${r[4]?`<small>${r[4]}</small>`:""}</h3></div>
+  <div class="chips"><span>${n} sets × ${r[2]}${n<r[1]?` (Week 1: ${n} of ${r[1]})`:""}</span><span class="rpe" data-rpe title="What is RPE?">RPE ${S.ph=="3"?r[3]:"6–7"} ⓘ</span><span>Rest ${fmt(e.r)}</span></div>
+  <p class="mus"><b>Primary muscles:</b> ${e.m}</p>
+  <div class="sets"><span>Sets</span>${boxes}</div>
+  <div class="wt"><label for="w${key.replace(":","-")}">Weight (kg)</label><input id="w${key.replace(":","-")}" type="number" inputmode="decimal" step="0.5" min="0" max="500" placeholder="kg" value="${val}" data-wk="${key}"><button class="btn" data-wsave="${key}">Save weight</button>${lg.length||val!==""?`<button class="btn" data-wreset="${key}">Reset</button>`:""}</div>
+  <div class="wl">${lg.length?`<b>Saved:</b>`+lg.slice(-3).reverse().map(x=>`<span>${kgT(x.kg)} · ${dl(x.d)}</span>`).join(""):"No weight saved yet. Enter the weight you used (0 = bodyweight)."}</div>
+  <div class="act"><button class="btn dn${full?" on":""}" data-all="${i}">${full?"✓ Completed":"Mark exercise done"}</button><button class="btn" data-tm="${e.r}">⏱ Rest timer ${fmt(e.r)}</button></div>
+  <p class="mist"><b>Common mistakes:</b> ${t[3]}</p>
+  <details data-i="${i}"><summary>Technique and instructions</summary><dl>
+  <dt>1. Starting position</dt><dd>${t[0]}</dd><dt>2. How to do it</dt><dd>${t[1]}</dd><dt>3. Breathing</dt><dd>${t[2]}</dd><dt>4. Muscles working</dt><dd>${e.m}</dd><dt>5. Common mistakes</dt><dd>${t[3]}</dd><dt>6. Safety and form cues</dt><dd>${t[4]}</dd><dt>7. When to stop or reduce the weight</dt><dd>${t[5]}</dd></dl></details>
+  </div></article>`}).join("");
+ keep.forEach(i=>{const d=$(`#list details[data-i="${i}"]`);if(d)d.setAttribute("open","")});
+ const s=stat(w);$("#dayBar").style.width=(s.t?s.d/s.t*100:0)+"%";$("#dayTxt").textContent=`${s.d}/${s.t} sets`;
+ $$(".ph").forEach(b=>b.classList.toggle("on",b.dataset.ph==S.ph));
+}
+const upd=()=>{renderSched();renderDay()};
+
+let armed=null;
+function sure(x,fn){x.dataset.o=x.dataset.o||x.textContent;if(armed===x){armed=null;x.textContent=x.dataset.o;fn();return}armed=x;x.textContent="Tap again to confirm";setTimeout(()=>{if(armed===x){armed=null;x.textContent=x.dataset.o}},3000)}
+let ti;
+function beep(){try{const c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator();o.connect(c.destination);o.frequency.value=880;o.start();o.stop(c.currentTime+.25);if(navigator.vibrate)navigator.vibrate(200)}catch(e){}}
+function tm(s){clearInterval(ti);const b=$("#timer");b.classList.add("show");let t=s;
+ const p=()=>{$("#tt").textContent=t>0?fmt(t):"Go!";$("#tbar").style.width=(100-t/s*100)+"%"};p();
+ ti=setInterval(()=>{t--;p();if(t<=0){clearInterval(ti);beep();setTimeout(()=>b.classList.remove("show"),4000)}},1000)}
+
+document.addEventListener("input",e=>{const i=e.target.closest("[data-wk]");if(i)draft[i.dataset.wk]=i.value});
+document.addEventListener("keydown",e=>{const i=e.target.closest&&e.target.closest("[data-wk]");if(i&&e.key==="Enter"){e.preventDefault();wsave(i.dataset.wk)}});
+function wsave(key){const i=$(`[data-wk="${key}"]`),v=parseFloat(i.value);if(isNaN(v)||v<0||v>500){i.focus();i.style.borderColor="var(--bad)";return}
+ const a=(S.log[key]||[]).filter(x=>x.d!==today());a.push({d:today(),kg:Math.round(v*100)/100});S.log[key]=a.slice(-30);delete draft[key];save();upd()}
+document.addEventListener("click",e=>{
+ const g=a=>e.target.closest("["+a+"]");let x;
+ if(x=g("data-set")){const k=x.dataset.set;if(S.done[k])delete S.done[k];else S.done[k]=1;save();upd()}
+ else if(x=g("data-all")){const i=+x.dataset.all,w=cur(),n=ns(w.x[i][1]),keys=[...Array(n).keys()].map(j=>`${w.k}:${i}:${j}`),all=keys.every(k=>S.done[k]);keys.forEach(k=>{if(all)delete S.done[k];else S.done[k]=1});save();upd()}
+ else if(x=g("data-wsave"))wsave(x.dataset.wsave);
+ else if(x=g("data-wreset")){const k=x.dataset.wreset;sure(x,()=>{delete S.log[k];delete draft[k];save();upd()})}
+ else if(x=g("data-tm"))tm(+x.dataset.tm);
+ else if(g("data-stop")){clearInterval(ti);$("#timer").classList.remove("show")}
+ else if(x=g("data-tab")){S.day=x.dataset.tab;save();upd()}
+ else if(x=g("data-go")){S.day=x.dataset.go;save();upd();$("#work").scrollIntoView()}
+ else if(x=g("data-ph")){S.ph=x.dataset.ph;save();upd()}
+ else if(g("data-rpe")){const d=$("#rpeD");d.showModal?d.showModal():d.setAttribute("open","")}
+ else if(g("data-close")){const d=$("#rpeD");d.close?d.close():d.removeAttribute("open")}
+ else if(x=g("data-reset"))sure(x,()=>{Object.keys(S.done).filter(k=>k.startsWith(S.day+":")).forEach(k=>delete S.done[k]);save();upd()});
+ else if(x=g("data-newwk"))sure(x,()=>{S.done={};save();upd()});
+});
+$("#goW").onclick=()=>{const d=new Date().getDay(),m={0:"UA",1:"LA",3:"UB",4:"LB"};if(m[d])S.day=m[d];save();upd();$("#work").scrollIntoView()};
+upd();
+</script>
+</body>
+</html>
