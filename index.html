@@ -305,10 +305,10 @@ E.pecdeck={n:"Pec Deck Machine",m:"Chest, front shoulders",r:75,q:"dS",l:["Start
 ... (rest of E continues unchanged) ...
 
 function fig(e){
-  const bd=(f,ox,oy)=>{const[t,th,sh,ua,fa,ft=90,t2,s2]=f,H=[ox,oy],sho=P(H,t,28),kn=P(H,th,22),an=P(kn,sh,22),to=P(an,ft,7),el=P(sho,ua,15),wr=P(el,fa,15),S=[[H,sho],[H,kn],[kn,an],[an,to],[sho,e[...]
+  const bd=(f,ox,oy)=>{const[t,th,sh,ua,fa,ft=90,t2,s2]=f,H=[ox,oy],sho=P(H,t,28),kn=P(H,th,22),an=P(kn,sh,22),to=P(an,ft,7),el=P(sho,ua,15),wr=P(el,fa,15),S=[[H,sho],[H,kn],[kn,an],[an,to],[sho,[...]
   if(t2!=null){const k=P(H,t2,22);a2=P(k,s2,22);S.push([H,k],[k,a2])}
   return{H,sho,an,wr,a2,S,hd:P(sho,t,10)};
-  };
+  }
   const r0=e.f.map(f=>bd(f,0,0)),my=r0.map(o=>Math.max(...o.S.flat().map(p=>p[1]))),cm=Math.max(...my);
   const fr=e.f.map((f,i)=>bd(f,e.h?0:-r0[i].an[0],e.h?-cm-(e.fy||0):-my[i])),q=e.q||"",po=e.po||[0,0];
   const out=fr.map(o=>{const{H,sho,an,wr,a2,S,hd}=o;let s="";const pts=[...S.flat(),[hd[0]-7,hd[1]-7],[hd[0]+7,hd[1]+7]];
@@ -327,16 +327,21 @@ function fig(e){
 }
 
 const W=[
-{k:"UA",d:"Sunday",n:"Upper A",x:[["incdb",3,"8–12","7–8"],["widepd",3,"8–12","7–8"],["pecdeck",2,"10–15","7–8"],["tbar",3,"8–12","7–8"],["revpec",2,"12–15","7–8"],["lateral",[...]
-{k:"LA",d:"Monday",n:"Lower A",x:[["squat",3,"6–10","7","Squat or leg press"],["rdl",3,"8–10","7–8"],["bss",2,"8–12 per leg","7"],["legcurl",2,"10–15","8"],["calf",3,"10–15","8"],["pl[...]
-{k:"UB",d:"Wednesday",n:"Upper B",x:[["incdb",3,"8–12","7–8"],["csrow",3,"8–12","7–8"],["latpd",2,"8–12","7–8","Or assisted pull-up"],["machpress",2,"8–12","7–8"],["lateral",2,"12[...]
-{k:"LB",d:"Thursday",n:"Lower B",x:[["legpress",3,"8–12","7–8","Leg press or squat"],["rdl",3,"8–12","7–8","Or another hip-hinge"],["bss",2,"8–12 per leg","7"],["legext",2,"10–15","8"[...]
+{k:"UA",d:"Sunday",n:"Upper A",x:[["incdb",3,"8–12","7–8"],["widepd",3,"8–12","7–8"],["pecdeck",2,"10–15","7–8"],["tbar",3,"8–12","7–8"],["revpec",2,"12–15","7–8"],["lateral",[...] ]},
+{k:"LA",d:"Monday",n:"Lower A",x:[["squat",3,"6–10","7","Squat or leg press"],["rdl",3,"8–10","7–8"],["bss",2,"8–12 per leg","7"],["legcurl",2,"10–15","8"],["calf",3,"10–15","8"],["pl[...] ]},
+{k:"UB",d:"Wednesday",n:"Upper B",x:[["incdb",3,"8–12","7–8"],["csrow",3,"8–12","7–8"],["latpd",2,"8–12","7–8","Or assisted pull-up"],["machpress",2,"8–12","7–8"],["lateral",2,"12[...] ]},
+{k:"LB",d:"Thursday",n:"Lower B",x:[["legpress",3,"8–12","7–8","Leg press or squat"],["rdl",3,"8–12","7–8","Or another hip-hinge"],["bss",2,"8–12 per leg","7"],["legext",2,"10–15","8"[...]]}
 ];
 
-// Make Upper B copy Upper A exercises so the B day matches A (keeps UB object but replaces its x list)
+// Make Upper B identical to Upper A (replace the UB object in W with a deep copy of UA)
 const ua = W.find(w=>w.k==='UA');
-const ub = W.find(w=>w.k==='UB');
-if(ua && ub){ ub.x = JSON.parse(JSON.stringify(ua.x)); }
+const ubIndex = W.findIndex(w=>w.k==='UB');
+if(ua && ubIndex !== -1){
+  W[ubIndex] = JSON.parse(JSON.stringify(ua));
+  W[ubIndex].k = 'UB';
+  W[ubIndex].d = 'Wednesday';
+  W[ubIndex].n = 'Upper B';
+}
 
 const WK=[["Sunday","UA"],["Monday","LA"],["Tuesday"],["Wednesday","UB"],["Thursday","LB"],["Friday"],["Saturday"]];
 let S={done:{},log:{},ph:"3",day:"UA"},lastDay="",draft={};
@@ -415,7 +420,20 @@ function wsave(key){const i=$(`[data-wk="${key}"]`),v=parseFloat(i.value);if(isN
 document.addEventListener("click",e=>{
  const g=a=>e.target.closest("["+a+"]");let x;
  if(x=g("data-set")){const k=x.dataset.set;if(S.done[k])delete S.done[k];else S.done[k]=1;save();upd()}
- else if(x=g("data-all")){const i+... (rest of file unchanged) ...
+ else if(x=g("data-all")){const i=+x.dataset.all,w=cur(),n=ns(w.x[i][1]),keys=[...Array(n).keys()].map(j=>`${w.k}:${i}:${j}`),all=keys.every(k=>S.done[k]);keys.forEach(k=>{if(all)delete S.done[k];else S.done[k]=1});save();upd()}
+ else if(x=g("data-wsave"))wsave(x.dataset.wsave);
+ else if(x=g("data-wreset")){const k=x.dataset.wreset;sure(x,()=>{delete S.log[k];delete draft[k];save();upd()})}
+ else if(x=g("data-tm"))tm(+x.dataset.tm);
+ else if(g("data-stop")){clearInterval(ti);$("#timer").classList.remove("show")}
+ else if(x=g("data-tab")){S.day=x.dataset.tab;save();upd()}
+ else if(x=g("data-go")){S.day=x.dataset.go;save();upd();$("#work").scrollIntoView()}
+ else if(x=g("data-ph")){S.ph=x.dataset.ph;save();upd()}
+ else if(g("data-rpe")){const d=$("#rpeD");d.showModal?d.showModal():d.setAttribute("open","")}
+ else if(g("data-close")){const d=$("#rpeD");d.close?d.close():d.removeAttribute("open")}
+ else if(x=g("data-reset"))sure(x,()=>{Object.keys(S.done).filter(k=>k.startsWith(S.day+":" )).forEach(k=>delete S.done[k]);save();upd()});
+ else if(x=g("data-newwk"))sure(x,()=>{S.done={};save();upd()});
+});
+$("#goW").onclick=()=>{const d=new Date().getDay(),m={0:"UA",1:"LA",3:"UB",4:"LB"};if(m[d])S.day=m[d];save();upd();$("#work").scrollIntoView()};
 upd();
 </script>
 <script>
